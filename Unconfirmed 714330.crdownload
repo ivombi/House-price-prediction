@@ -1,0 +1,156 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import json\n",
+    "import joblib\n",
+    "import numpy as np\n",
+    "from azureml.core.model import Model\n",
+    "\n",
+    "# Called when the service is loaded\n",
+    "def init():\n",
+    "    global model\n",
+    "    # Get the path to the deployed model file and load it\n",
+    "    \n",
+    "    model_path = 'outputs/house_price_Forest_model.pkl'\n",
+    "    model = joblib.load(model_path)\n",
+    "\n",
+    "# Called when a request is received\n",
+    "def run(raw_data):\n",
+    "    # Get the input data as a numpy array\n",
+    "    data = np.array(json.loads(raw_data)['data'])\n",
+    "    # Get a prediction from the model\n",
+    "    predictions = model.predict(data)\n",
+    "    \n",
+    "    # Return the predictions as JSON\n",
+    "    return json.dumps(predictions)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "ModelNotFoundException",
+     "evalue": "ModelNotFoundException:\n\tMessage: Model not found in cache or in root at ./outputs/house_price_Forest_model.pkl. For more info,set logging level to DEBUG.\n\tInnerException None\n\tErrorResponse \n{\n    \"error\": {\n        \"message\": \"Model not found in cache or in root at ./outputs/house_price_Forest_model.pkl. For more info,set logging level to DEBUG.\"\n    }\n}",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mModelNotFoundException\u001b[0m                    Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-4-00ab6337551c>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mazureml\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mcore\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmodel\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m \u001b[0mmodel_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget_model_path\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'outputs/house_price_Forest_model.pkl'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/anaconda/envs/azureml_py36/lib/python3.6/site-packages/azureml/core/model.py\u001b[0m in \u001b[0;36mget_model_path\u001b[0;34m(model_name, version, _workspace)\u001b[0m\n\u001b[1;32m    790\u001b[0m                 \u001b[0;32mreturn\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_get_model_path_remote\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmodel_name\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mversion\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mactive_workspace\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    791\u001b[0m             \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 792\u001b[0;31m                 \u001b[0;32mreturn\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_get_model_path_local\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmodel_name\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mversion\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    793\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    794\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0mstaticmethod\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/anaconda/envs/azureml_py36/lib/python3.6/site-packages/azureml/core/model.py\u001b[0m in \u001b[0;36m_get_model_path_local\u001b[0;34m(model_name, version)\u001b[0m\n\u001b[1;32m    811\u001b[0m         \u001b[0;31m# Probing azureml-models/<name>\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    812\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mexists\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mcandidate_model_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 813\u001b[0;31m             \u001b[0;32mreturn\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_get_model_path_local_from_root\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmodel_name\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    814\u001b[0m         \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    815\u001b[0m             \u001b[0;31m# Probing azureml-models/<name> exists, probing version\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/anaconda/envs/azureml_py36/lib/python3.6/site-packages/azureml/core/model.py\u001b[0m in \u001b[0;36m_get_model_path_local_from_root\u001b[0;34m(model_name)\u001b[0m\n\u001b[1;32m    854\u001b[0m             \u001b[0;32mreturn\u001b[0m \u001b[0mcandidate_model_path\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    855\u001b[0m         raise ModelNotFoundException(\"Model not found in cache or in root at ./{}. For more info,\"\n\u001b[0;32m--> 856\u001b[0;31m                                      \"set logging level to DEBUG.\".format(candidate_model_path))\n\u001b[0m\u001b[1;32m    857\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    858\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0mstaticmethod\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mModelNotFoundException\u001b[0m: ModelNotFoundException:\n\tMessage: Model not found in cache or in root at ./outputs/house_price_Forest_model.pkl. For more info,set logging level to DEBUG.\n\tInnerException None\n\tErrorResponse \n{\n    \"error\": {\n        \"message\": \"Model not found in cache or in root at ./outputs/house_price_Forest_model.pkl. For more info,set logging level to DEBUG.\"\n    }\n}"
+     ]
+    }
+   ],
+   "source": [
+    "from azureml.core.model import Model\n",
+    "model_path = Model.get_model_path('outputs/house_price_Forest_model.pkl')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Ready to use  seed\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Connect to workspace\n",
+    "from azureml.core import Workspace\n",
+    "\n",
+    "ws = Workspace.from_config()\n",
+    "print('Ready to use ', ws.name)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "house_price_Forest_model version 1\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Model to be deploy \n",
+    "model = ws.models['house_price_Forest_model']\n",
+    "print(model.name, 'version', model.version)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "ModelNotFoundException",
+     "evalue": "ModelNotFoundException:\n\tMessage: Model not found in cache or in root at ././outputs/house_price_Forest_model.pkl. For more info,set logging level to DEBUG.\n\tInnerException None\n\tErrorResponse \n{\n    \"error\": {\n        \"message\": \"Model not found in cache or in root at ././outputs/house_price_Forest_model.pkl. For more info,set logging level to DEBUG.\"\n    }\n}",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mModelNotFoundException\u001b[0m                    Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-17-9f82bc96da7f>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mnumpy\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mazureml\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mcore\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmodel\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 5\u001b[0;31m \u001b[0mmodel_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget_model_path\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'./outputs/house_price_Forest_model.pkl'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      6\u001b[0m \u001b[0mmodel\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mjoblib\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mload\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmodel_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/anaconda/envs/azureml_py36/lib/python3.6/site-packages/azureml/core/model.py\u001b[0m in \u001b[0;36mget_model_path\u001b[0;34m(model_name, version, _workspace)\u001b[0m\n\u001b[1;32m    790\u001b[0m                 \u001b[0;32mreturn\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_get_model_path_remote\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmodel_name\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mversion\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mactive_workspace\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    791\u001b[0m             \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 792\u001b[0;31m                 \u001b[0;32mreturn\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_get_model_path_local\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmodel_name\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mversion\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    793\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    794\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0mstaticmethod\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/anaconda/envs/azureml_py36/lib/python3.6/site-packages/azureml/core/model.py\u001b[0m in \u001b[0;36m_get_model_path_local\u001b[0;34m(model_name, version)\u001b[0m\n\u001b[1;32m    811\u001b[0m         \u001b[0;31m# Probing azureml-models/<name>\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    812\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mexists\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mcandidate_model_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 813\u001b[0;31m             \u001b[0;32mreturn\u001b[0m \u001b[0mModel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_get_model_path_local_from_root\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmodel_name\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    814\u001b[0m         \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    815\u001b[0m             \u001b[0;31m# Probing azureml-models/<name> exists, probing version\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/anaconda/envs/azureml_py36/lib/python3.6/site-packages/azureml/core/model.py\u001b[0m in \u001b[0;36m_get_model_path_local_from_root\u001b[0;34m(model_name)\u001b[0m\n\u001b[1;32m    854\u001b[0m             \u001b[0;32mreturn\u001b[0m \u001b[0mcandidate_model_path\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    855\u001b[0m         raise ModelNotFoundException(\"Model not found in cache or in root at ./{}. For more info,\"\n\u001b[0;32m--> 856\u001b[0;31m                                      \"set logging level to DEBUG.\".format(candidate_model_path))\n\u001b[0m\u001b[1;32m    857\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    858\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0mstaticmethod\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mModelNotFoundException\u001b[0m: ModelNotFoundException:\n\tMessage: Model not found in cache or in root at ././outputs/house_price_Forest_model.pkl. For more info,set logging level to DEBUG.\n\tInnerException None\n\tErrorResponse \n{\n    \"error\": {\n        \"message\": \"Model not found in cache or in root at ././outputs/house_price_Forest_model.pkl. For more info,set logging level to DEBUG.\"\n    }\n}"
+     ]
+    }
+   ],
+   "source": [
+    "import json\n",
+    "import joblib\n",
+    "import numpy as np\n",
+    "from azureml.core.model import Model\n",
+    "model_path = Model.get_model_path('house_price_Forest_model.pkl')\n",
+    "model = joblib.load(model_path)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3.6 - AzureML",
+   "language": "python",
+   "name": "python3-azureml"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
