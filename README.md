@@ -9,3 +9,6 @@ The main idea was to build two estimators using Random forest and Ridge regressi
 Some of the key metrics used to compare both estimators were RMSE and Coefficient of determination(R2). The metric values for Random forest and Ridge were as follows:
 > - RMSE: 27,177.3 vs 26,397.8
 > - R2: 0.97 vs 0.93
+
+Taking RMSE as the primary metric, Ridge regression was selected as best performing estimator due to its small value as compared to Randome forest. <br>
+Model registration and deployment was done to consume as a service through an API
